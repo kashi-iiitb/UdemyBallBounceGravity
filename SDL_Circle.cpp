@@ -121,7 +121,7 @@ int main(){
 
     bool running = true;
     SDL_Event e;
-    Ball ball{300,100,30};
+    Ball ball;
     
     while(running){
         
