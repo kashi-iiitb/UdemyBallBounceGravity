@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 
 const float GRAVITY = 9.8; //earths gravity
-const float FLOOR_DIST = 4; //ball is 4 meter above ground
+const float FLOOR_DIST = 4.2; //ball is 4 meter above ground
 const float dt = 0.02;  //iteration interval 20ms
 const float COE_REST = 0.8; //coefficient of restitution
 
@@ -36,10 +36,10 @@ public:
                 cur_pos = cur_pos + cur_vel * dt;
                 //std::cout << "cur_vel = " << cur_vel << "\t";
                 //std::cout << "cur_pos = " << cur_pos << "\n";
-                if(cur_pos >=4){
+                if(cur_pos + radius/PPM >=4.2){
                     //std::cout << "We have hit the floor\n";
                     cur_vel = cur_vel * COE_REST;
-                    cur_pos = FLOOR_DIST;
+                    cur_pos = FLOOR_DIST - radius/PPM;
                     dir = direction::UP;
                 }
                 centerY = cur_pos * PPM + 100;
