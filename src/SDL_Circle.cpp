@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 
 const float GRAVITY = 9.8; //earths gravity
-const float FLOOR_DIST = 4.2; //ball is 4 meter above ground
+const float FLOOR_DIST = 6; //ball is 4 meter above ground
 const float dt = 0.02;  //iteration interval 20ms
 const float COE_REST = 0.8; //coefficient of restitution
 
@@ -18,19 +18,47 @@ class Ball{
     int centerX;
     int centerY;
     float radius;
-    float cur_vel;
-    float cur_pos;
+    float velX;
+    float posX;
+    float velY;
+    float posY;
     direction dir;
 
 public:
 
-    Ball():centerX(100),centerY(100),radius(20),
-           cur_vel(0),cur_pos(0),dir(direction::DOWN) {}
-    Ball(int x, int y, int r):centerX(x),centerY(y),radius(r),
-           cur_vel(0),cur_pos(0),dir(direction::DOWN) {}
+    Ball():radius(0.2),
+           velX(2.5),posX(START_X/PPM),velY(0),posY(START_Y/PPM) {}
+    Ball(float x, float y, float r):radius(r),
+           velX(2.5),posX(x),velY(0),posY(y) {}
 
     void update(){
-        switch(dir){
+
+        float leftWall = radius;
+        float rightWall = SCREEN_WIDTH/PPM - radius;
+        float floor = SCREEN_HEIGHT/PPM - radius;
+        float ceiling = radius;
+
+        velY += GRAVITY * dt;
+        posY += velY * dt; 
+        posX += velX * dt;
+        centerX = posX * PPM;
+        centerY = posY * PPM;
+
+        if(posX >= rightWall){
+          posX = rightWall;
+          velX = -velX * COE_REST ;
+        } else if(posX <= leftWall){
+          posX = leftWall;
+          velX = -velX * COE_REST;
+        }
+        if(posY >= floor){
+          posY = floor;
+          velY = -velY * COE_REST ;
+        } else if(posY <= ceiling){
+          posY = ceiling;
+          velY = -velY * COE_REST;
+        }
+        /*switch(dir){
             case direction::DOWN:
                 cur_vel = cur_vel + GRAVITY * dt;
                 cur_pos = cur_pos + cur_vel * dt;
@@ -57,13 +85,13 @@ public:
                 centerY = cur_pos * PPM + 100;
                     break;
 
-        }
+        }*/
     } 
 
     void draw_circle(SDL_Renderer* renderer) {
-        const int32_t diameter = (radius * 2);
+        const int32_t diameter = (radius*PPM * 2);
 
-        int32_t x = (radius - 1);
+        int32_t x = (radius*PPM - 1);
         int32_t y = 0;
         int32_t tx = 1;
         int32_t ty = 1;
@@ -136,7 +164,7 @@ int main(){
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         ball.update();
         ball.draw_circle(renderer);
-        SDL_RenderDrawLineF(renderer, 0, 520, 799, 520);
+        //SDL_RenderDrawLineF(renderer, 0, 520, 799, 520);
         SDL_RenderPresent(renderer);
         SDL_Delay(20);
         
